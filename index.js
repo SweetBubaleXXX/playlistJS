@@ -4,19 +4,19 @@ const fs = require("fs");
 const express = require("express");
 
 const PORT = process.env.PORT || 3000;
-const AUDIO_PATH = path.resolve(process.env.AUDIO_PATH || "./")
+const AUDIO_PATH = path.resolve(process.env.AUDIO_PATH || "./");
 const DELIMITER = " - ";
 
 const songFilesInfo = {};
 
 const app = express();
 
-app.get("/", (req, res) => {
+app.get("/playlist", (req, res) => {
     const files = fs.readdirSync(AUDIO_PATH);
     if (files.length === 0)
         return res.sendStatus(404);
     if (Object.keys(songFilesInfo).length === files.length) {
-        return res.send(songFilesInfo)
+        return res.send(songFilesInfo);
     }
     files.forEach((file, index) => {
         if (path.extname(file) !== ".mp3") {
@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
     });
 });
 
-app.get("/:file", (req, res) => {
+app.get("/playlist/:file", (req, res) => {
     res.sendFile(path.join(AUDIO_PATH, decodeURIComponent(req.params.file)));
 });
 
