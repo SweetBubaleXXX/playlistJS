@@ -1,0 +1,14 @@
+<html>
+
+<body>
+  <script>
+    fetch('/', {
+      method: 'POST',
+      redirect: 'follow',
+      headers: new Headers({ 'Content-Type': 'text/plain' }),
+      body: prompt('Enter password'),
+    }).then(() => { document.location.reload() });
+  </script>
+</body>
+
+</html>

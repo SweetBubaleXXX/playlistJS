@@ -1,7 +1,12 @@
 const path = require("path");
 const fs = require("fs");
 
+require("dotenv").config();
 const express = require("express");
+const session = require("express-session");
+
+const isAuthenticated = require("./middlewares/isAuthenticated");
+const { validate } = require("./pass");
 
 const PORT = process.env.PORT || 3000;
 const AUDIO_PATH = path.resolve(process.env.AUDIO_PATH || "./");
@@ -11,10 +16,27 @@ const songFilesInfo = {};
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.text());
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    maxAge: 1000 * 60 * 60 * 48
+}));
+app.use("/playlist", isAuthenticated);
 
 app.get("/", (req, res) => {
+    if (!req.session.authenticated) {
+        return res.sendFile(path.join(__dirname, "views/prompt.html"));
+    }
     res.sendFile(path.join(__dirname, "public/index.html"));
+});
+
+app.use(express.static(path.join(__dirname, "public")));
+
+app.post("/", (req, res) => {
+    req.session.authenticated = validate(req.body, process.env.PASSWORD);
+    res.redirect("/");
 });
 
 app.get("/playlist", (req, res) => {
