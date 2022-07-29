@@ -11,6 +11,12 @@ const songFilesInfo = {};
 
 const app = express();
 
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/index.html"));
+});
+
 app.get("/playlist", (req, res) => {
     const files = fs.readdirSync(AUDIO_PATH);
     if (files.length === 0)
